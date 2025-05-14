@@ -1,0 +1,51 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.restaurant-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+
+}
+
+.review-list {
+  text-align: left;
+  background-color: rgba(200, 195, 221, 0.3);
+  border-radius: 10px;
+  margin-bottom: 20px;
+  padding: 10px;
+  width: 75vh;
+
+}
+
+input[type="text"], input[type="email"], input[type="checkbox"],select, textarea {
+  background-color: rgb(226, 226, 251);
+  border-color: rgba(69, 64, 88, 0.3);
+  color: rgb(18, 0, 0);
+}
+
+#submit-review-button {
+  margin: 20px;
+}
+
+.review {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+}
+
+.add-review-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+
+}
