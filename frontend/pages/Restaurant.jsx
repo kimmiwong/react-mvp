@@ -28,7 +28,7 @@ function Restaurant () {
 
             }
 
-            catch {
+            catch { console.error(Error)
 
 
             }
