@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Float
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 
 
 Base = declarative_base()
@@ -29,6 +30,8 @@ class DBFavoriteRestaurants(Base):
     user_id = Column(Integer, ForeignKey('users.user_id'), nullable=False)
     restaurant_id = Column(Integer, ForeignKey('restaurants.restaurant_id'), nullable=False)
 
+    restaurant = relationship("DBRestaurants")
+
 
 class DBReviews(Base):
     __tablename__ = "reviews"
@@ -38,3 +41,6 @@ class DBReviews(Base):
     restaurant_id = Column(Integer, ForeignKey('restaurants.restaurant_id'), nullable=False)
     rating = Column(Float)
     comment = Column(String)
+
+    user = relationship("DBUsers")
+    restaurant = relationship("DBRestaurants")

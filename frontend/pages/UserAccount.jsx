@@ -7,11 +7,16 @@ function UserAccount () {
     const { userId } = useParams();
     const[userFavorites, setUserFavorites] = useState([])
     const[userReviews, setUserReviews] = useState([])
+    const [userName, setUserName] = useState([])
 
     useEffect(() => {
         async function fetchUserInfo() {
 
             try {
+                const userResponse = await fetch (`http://localhost:8000/api/users/${userId}`)
+                const name = await userResponse.json()
+                setUserName(name)
+
                 const response = await fetch (`http://localhost:8000/api/users/${userId}/favorites`)
                 const favorites = await response.json()
                 setUserFavorites(favorites)
@@ -40,6 +45,7 @@ return (
 <>
 <Link to="/">Go Home</Link>
 <div className = 'user-container'>
+  <h2>{userName.username}'s Profile</h2>
     <div className = 'user-review-list'>
         <h2>Reviews</h2>
 
@@ -49,7 +55,7 @@ return (
         {
         userReviews.map((review) => (
             <li key={review.review_id}>
-                            <h3>{review.restaurant_id}</h3>
+                            <h3>{review.restaurant_name}</h3>
 
                             <p>Rating: {review.rating}/5 Stars</p>
                             <p>{review.comment}</p>
@@ -78,7 +84,7 @@ return (
                 {
                     userFavorites.map((favorite) => (
                     <li key={favorite.favorite_id}>
-                        <h3>{favorite.restaurant_id}</h3>
+                        <h3>{favorite.restaurant_name}</h3>
 
                     </li>
                     ))

@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from db_models import DBRestaurants, DBFavoriteRestaurants, DBReviews, DBUsers
-from schemas import RestaurantIn, RestaurantOut, UserIn, UserOut, FavRestaurantIn, FavRestaurantOut, ReviewIn, ReviewOut
+from schemas import RestaurantIn, RestaurantOut, UserIn, UserOut, FavRestaurantIn, FavRestaurantOut, ReviewIn, ReviewOut, ReviewWithUser, UserReviewWithRestaurant, FavoriteWithRestaurant
 
 DATABASE_URL = "postgresql+psycopg://postgres:postgres@localhost:5432/mvp"
 
@@ -48,16 +48,16 @@ def get_restaurant(restaurant_id: int) -> RestaurantOut:
 
     )
 
-def get_reviews(restaurant_id: int) -> list[ReviewOut]:
+def get_reviews(restaurant_id: int) -> list[ReviewWithUser]:
     db=SessionLocal()
-    db_reviews = db.query(DBReviews).filter(DBReviews.restaurant_id==restaurant_id).all()
+    db_reviews = db.query(DBReviews).filter(DBReviews.restaurant_id==restaurant_id).join(DBUsers).all()
 
     reviews = []
     for db_review in db_reviews:
-        reviews.append(ReviewOut(
+        reviews.append(ReviewWithUser(
             review_id=db_review.review_id,
             user_id=db_review.user_id,
-            restaurant_id=db_review.restaurant_id,
+            username=db_review.user.username,
             rating=db_review.rating,
             comment=db_review.comment
 
@@ -66,16 +66,16 @@ def get_reviews(restaurant_id: int) -> list[ReviewOut]:
     return reviews
 
 
-def get_user_reviews(user_id: int) -> list[ReviewOut]:
+def get_user_reviews(user_id: int) -> list[UserReviewWithRestaurant]:
     db = SessionLocal()
-    db_reviews = db.query(DBReviews).filter(DBReviews.user_id==user_id).all()
+    db_reviews = db.query(DBReviews).filter(DBReviews.user_id==user_id).join(DBRestaurants).all()
 
     user_reviews = []
     for db_review in db_reviews:
-        user_reviews.append(ReviewOut(
+        user_reviews.append(UserReviewWithRestaurant(
             review_id=db_review.review_id,
-            user_id=db_review.user_id,
             restaurant_id=db_review.restaurant_id,
+            restaurant_name= db_review.restaurant.name,
             rating=db_review.rating,
             comment=db_review.comment
 
@@ -134,7 +134,7 @@ def get_user(user_id: int) -> UserOut:
 def get_user_by_username(username: str):
     db=SessionLocal()
     db_user = db.query(DBUsers).filter(DBUsers.username==username).first()
-    db.close
+    db.close()
     return db_user
 
 def add_user(user: UserIn) -> UserOut:
@@ -151,17 +151,17 @@ def add_user(user: UserIn) -> UserOut:
     )
     return user
 
-def get_favorites(user_id: int) -> list[FavRestaurantOut]:
+def get_favorites(user_id: int) -> list[FavoriteWithRestaurant]:
     db=SessionLocal()
-    db_favorites = db.query(DBFavoriteRestaurants).filter(DBFavoriteRestaurants.user_id==user_id).all()
+    db_favorites = db.query(DBFavoriteRestaurants).filter(DBFavoriteRestaurants.user_id==user_id).join(DBRestaurants).all()
 
 
     favorites = []
     for db_favorite in db_favorites:
-        favorites.append(FavRestaurantOut(
+        favorites.append(FavoriteWithRestaurant(
             favorite_id=db_favorite.favorite_id,
-            user_id=db_favorite.user_id,
-            restaurant_id=db_favorite.restaurant_id
+            restaurant_id=db_favorite.restaurant_id,
+            restaurant_name = db_favorite.restaurant.name
 
 
         ))

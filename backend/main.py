@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
 import requests
-from schemas import RestaurantIn, RestaurantOut, ReviewIn, ReviewOut, UserIn, UserOut, FavRestaurantOut, FavRestaurantIn
+from schemas import RestaurantIn, RestaurantOut, ReviewIn, ReviewOut, UserIn, UserOut, FavRestaurantOut, FavRestaurantIn, ReviewWithUser, FavoriteWithRestaurant, UserReviewWithRestaurant
 from db import add_restaurant, get_restaurants, get_restaurant, get_reviews, create_review, get_user, add_user, get_users, get_favorites, add_favorite, get_user_reviews, get_user_by_username
 
 
@@ -79,7 +79,7 @@ async def get_restaurant_details(restaurant_id: int) -> RestaurantOut:
 
 
 @app.get("/api/restaurants/{restaurant_id}/reviews")
-async def get_restaurant_reviews(restaurant_id: int) -> list[ReviewOut] | None:
+async def get_restaurant_reviews(restaurant_id: int) -> list[ReviewWithUser] | None:
     reviews = get_reviews(restaurant_id)
     return reviews
 
@@ -115,7 +115,7 @@ async def add_restaurant_user(user: UserIn) -> UserOut:
 
 
 @app.get("/api/users/{user_id}/favorites")
-async def get_restaurant_favorites(user_id: int) -> list[FavRestaurantOut]:
+async def get_restaurant_favorites(user_id: int) -> list[FavoriteWithRestaurant]:
     return get_favorites(user_id)
 
 
@@ -125,5 +125,5 @@ async def add_favorite_restaurant(user_id: int, favorite: FavRestaurantIn) -> Fa
 
 
 @app.get("/api/users/{user_id}/reviews")
-async def get_user_restaurant_reviews(user_id: int) -> list[ReviewOut]:
+async def get_user_restaurant_reviews(user_id: int) -> list[UserReviewWithRestaurant]:
     return get_user_reviews(user_id)

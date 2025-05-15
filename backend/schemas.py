@@ -39,3 +39,22 @@ class ReviewIn(BaseModel):
 class ReviewOut(ReviewIn):
     review_id: int
     restaurant_id: int
+
+class ReviewWithUser(BaseModel):
+    review_id: int
+    user_id: int
+    username: str
+    rating: float
+    comment: str
+
+class UserReviewWithRestaurant(BaseModel):
+    review_id: int
+    restaurant_id: int
+    restaurant_name: str
+    rating: float
+    comment: str
+
+class FavoriteWithRestaurant(BaseModel):
+    favorite_id: int
+    restaurant_id: int
+    restaurant_name: str

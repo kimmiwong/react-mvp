@@ -59,7 +59,7 @@ return (
                     <li key={review.review_id}>
                         <p>Rating: {review.rating}/5 Stars</p>
                         <p>{review.comment}</p>
-                        <h6>Posted by <Link to={`/${review.user_id}/useraccount`}>{review.user_id}</Link></h6>
+                        <h6>Posted by <Link to={`/${review.user_id}/useraccount`}>{review.username}</Link></h6>
                     </li>
 
 

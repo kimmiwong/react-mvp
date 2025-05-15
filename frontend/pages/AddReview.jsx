@@ -1,5 +1,5 @@
 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {useState, useEffect, useContext} from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -11,12 +11,28 @@ const { id } = useParams();
 const [email, setEmail] = useState ('')
 const [username, setUsername] = useState ('')
 const [password, setPassword] = useState('')
-const [rating, setRating] = useState(0)
+const [rating, setRating] = useState(1)
 const [reviewText, setReviewText] = useState ('')
 const [favorite, setFavorite] = useState(false)
+const [restaurantName, setRestaurantName] = useState('')
+const navigate = useNavigate();
+
+useEffect(()=> {
+const fetchRestaurantName = async () => {
+        const restaurantResponse = await fetch (`http://localhost:8000/api/restaurants/${id}`)
+        const restaurantInfo = await restaurantResponse.json()
+        setRestaurantName(restaurantInfo)
+
+}
+fetchRestaurantName()
+
+}, [id])
 
 const handleSubmit = async(e) => {
+
     e.preventDefault();
+
+
 
 
     try{
@@ -73,10 +89,11 @@ const handleSubmit = async(e) => {
             })
             })
         }
+        navigate(-1);
 
 
     }
-    catch{console.error(Error)
+    catch(error) {console.error("Error adding review:", error);
 
     }
 }
@@ -88,7 +105,7 @@ return (
 
 
 <div className='add-review-container'>
-    <h2>Add Review</h2>
+    <h2>Add Review for {restaurantName.name}</h2>
    <form className = 'review' onSubmit={handleSubmit}>
         <div className = "review">
             <div>
