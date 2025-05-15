@@ -51,18 +51,20 @@ return (
     <h2  style={{ textDecoration: 'underline' }}>Reviews</h2>
     <div className = "review-list">
             {reviewList.length > 0 ? (
+                <ol>
 
-                reviewList.map((review)=> (
-                 <ol>
+                {reviewList.map((review)=> (
+
 
                     <li key={review.review_id}>
                         <p>Rating: {review.rating}/5 Stars</p>
                         <p>{review.comment}</p>
                         <h6>Posted by <Link to={`/${review.user_id}/useraccount`}>{review.user_id}</Link></h6>
                     </li>
-                 </ol>
 
-                ))
+
+                ))}
+                </ol>
             ): (
 
                     <p>No reviews yet!</p>

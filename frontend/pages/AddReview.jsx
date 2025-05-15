@@ -18,7 +18,18 @@ const [favorite, setFavorite] = useState(false)
 const handleSubmit = async(e) => {
     e.preventDefault();
 
+
     try{
+
+        let userId;
+
+        const userLookUp = await fetch(`http://localhost:8000/api/users?username=${username}`)
+        const existingUsers = await userLookUp.json()
+
+        if(userLookUp.ok && existingUsers.length >0) {
+            userId=existingUsers[0].user_id
+        } else {
+
 
         const userResponse = await fetch("http://localhost:8000/api/users", {
             method: 'POST',
@@ -31,9 +42,12 @@ const handleSubmit = async(e) => {
         })
         })
 
+        if (!userResponse.ok) throw new Error ("Failed to create user")
         const newUser = await userResponse.json();
-        console.log("Created user:", newUser);
-        const userId = newUser.user_id;
+        userId = newUser.user_id;
+        }
+
+
 
         const restaurantResponse = await fetch (`http://localhost:8000/api/restaurants/${id}`)
         const reviewResponse = await fetch (`http://localhost:8000/api/restaurants/${id}/reviews`, {

@@ -131,6 +131,12 @@ def get_user(user_id: int) -> UserOut:
 
     )
 
+def get_user_by_username(username: str):
+    db=SessionLocal()
+    db_user = db.query(DBUsers).filter(DBUsers.username==username).first()
+    db.close
+    return db_user
+
 def add_user(user: UserIn) -> UserOut:
     db = SessionLocal()
     db_user = DBUsers(**user.model_dump())

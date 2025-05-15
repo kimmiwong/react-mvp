@@ -1,8 +1,9 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from typing import Optional
 import requests
 from schemas import RestaurantIn, RestaurantOut, ReviewIn, ReviewOut, UserIn, UserOut, FavRestaurantOut, FavRestaurantIn
-from db import add_restaurant, get_restaurants, get_restaurant, get_reviews, create_review, get_user, add_user, get_users, get_favorites, add_favorite, get_user_reviews
+from db import add_restaurant, get_restaurants, get_restaurant, get_reviews, create_review, get_user, add_user, get_users, get_favorites, add_favorite, get_user_reviews, get_user_by_username
 
 
 app = FastAPI()
@@ -11,7 +12,15 @@ origins = [
     "http://localhost:8000",
     "http://localhost:8000/api/restaurants",
     "http://localhost:5173",
-    "/api/restaurants/{restaurant_id}"
+    "http://localhost:8000/api/restaurants/{restaurant_id}",
+    "http://localhost:5173/{restaurant_id}/addreview",
+    "http://localhost:5173/{user_id}/useraccount",
+    "http://localhost:5173/{restaurant_id}"
+    "http://localhost:8000/api/users",
+    "http://localhost:8000/api/restaurants/{restaurant_id}/reviews",
+    "http://localhost:8000/api/users/{user_id}",
+    "http://localhost:8000/api/users/{user_id}/reviews",
+    "http://localhost:8000/api/users/{user_id}/favorites"
 ]
 
 app.add_middleware(
@@ -81,9 +90,13 @@ async def create_restaurant_review(restaurant_id: int, review: ReviewIn) -> Revi
 
 
 @app.get("/api/users")
-async def get_restaurant_users() -> list[UserOut]:
-    users = get_users()
-    return users
+async def get_restaurant_users(username: Optional[str]) -> list[UserOut]:
+    if username:
+        user = get_user_by_username(username)
+        if user:
+            return [user]
+    return get_users()
+
 
 
 @app.get("/api/users/{user_id}")
@@ -92,6 +105,7 @@ async def get_restaurant_user(user_id: int) -> UserOut:
     if not user:
         raise HTTPException(status_code=404, detail='User not found')
     return user
+
 
 
 @app.post("/api/users")
