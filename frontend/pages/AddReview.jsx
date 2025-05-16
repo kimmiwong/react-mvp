@@ -39,28 +39,31 @@ const handleSubmit = async(e) => {
 
         let userId;
 
-        const userLookUp = await fetch(`http://localhost:8000/api/users?username=${username}`)
+        const userLookUp = await fetch(`http://localhost:8000/api/users`)
         const existingUsers = await userLookUp.json()
 
-        if(userLookUp.ok && existingUsers.length >0) {
-            userId=existingUsers[0].user_id
+        if (!userLookUp.ok) throw new Error ("Failed to fetch users")
+        const matchedUser = existingUsers.find(user => user.username === username);
+        if(matchedUser) {
+                userId=matchedUser.user_id
+
         } else {
 
 
-        const userResponse = await fetch("http://localhost:8000/api/users", {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                username,
-                email,
-                password
+            const userResponse = await fetch("http://localhost:8000/api/users", {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    username,
+                    email,
+                    password
 
-        })
-        })
+                })
+            });
 
-        if (!userResponse.ok) throw new Error ("Failed to create user")
-        const newUser = await userResponse.json();
-        userId = newUser.user_id;
+            if (!userResponse.ok) throw new Error ("Failed to create user")
+            const newUser = await userResponse.json();
+            userId = newUser.user_id;
         }
 
 
@@ -75,8 +78,8 @@ const handleSubmit = async(e) => {
                 rating: parseFloat(rating),
                 comment: reviewText
 
-        })
-        })
+            })
+        });
 
         if (favorite) {
             const response = await fetch (`http://localhost:8000/api/users/${userId}`)
@@ -87,7 +90,7 @@ const handleSubmit = async(e) => {
                     restaurant_id: id
 
             })
-            })
+        });
         }
         navigate(-1);
 
@@ -99,64 +102,65 @@ const handleSubmit = async(e) => {
 }
 
 return (
-<>
+        <>
 
-<Link to="/">Go Home</Link>
+            <Link to="/">Go Home</Link>
 
 
-<div className='add-review-container'>
-    <h2>Add Review for {restaurantName.name}</h2>
-   <form className = 'review' onSubmit={handleSubmit}>
-        <div className = "review">
-            <div>
-                <label>Enter your email: </label>
-                <input type = "email" value = {email} onChange={e => setEmail(e.target.value)}/>
-            </div>
-            <div>
-                <label>Enter your username: </label>
-                <input type = "text" value = {username} onChange={e => setUsername(e.target.value)}/>
-            </div>
-            <div>
-                <label>Enter your password: </label>
-                <input type = "text" value = {password} onChange={e => setPassword(e.target.value)}/>
-            </div>
+        <div className='add-review-container'>
+                <h2>Add Review for {restaurantName.name}</h2>
+            <form className = 'review' onSubmit={handleSubmit}>
+                    <div className = "review">
+                        <div>
+                            <label>Enter your email: </label>
+                            <input type = "email" value = {email} onChange={e => setEmail(e.target.value)}/>
+                        </div>
+                        <div>
+                            <label>Enter your username: </label>
+                            <input type = "text" value = {username} onChange={e => setUsername(e.target.value)}/>
+                        </div>
+                        <div>
+                            <label>Enter your password: </label>
+                            <input type = "text" value = {password} onChange={e => setPassword(e.target.value)}/>
+                        </div>
+                    </div>
+
+                        <div>
+                            <label htmlFor = "rating">Select rating</label>
+                            <select name = "rating" id = "rating" value = {rating} onChange={e => setRating(e.target.value)}>
+                                <option value = "1">1</option>
+                                <option value = "1.5">1.5</option>
+                                <option value = "2">2</option>
+                                <option value = "2.5">2.5</option>
+                                <option value = "3">3</option>
+                                <option value = "3.5">3.5</option>
+                                <option value = "4">4</option>
+                                <option value = "4.5">4.5</option>
+                                <option value = "5">5</option>
+
+
+                            </select>
+                        </div>
+                        <div>
+                            <label  htmlFor = "review-text">Write a review: </label>
+                            <br></br>
+                            <textarea id = "review-text" name = "review-text" value = {reviewText} onChange={e => setReviewText(e.target.value)}></textarea>
+                        </div>
+
+                        <div>
+                            <label>Would you like to favorite this restaurant?</label>
+                            <input type = "checkbox" value = {favorite} onChange={e => setFavorite(!favorite)}/>
+                        </div>
+
+                        <div>
+                            <button id= "submit-review-button" type = "submit">Submit Review</button>
+                        </div>
+
+            </form>
         </div>
-
-            <div>
-                <label htmlFor = "rating">Select rating</label>
-                <select name = "rating" id = "rating" value = {rating} onChange={e => setRating(e.target.value)}>
-                    <option value = "1">1</option>
-                    <option value = "1.5">1.5</option>
-                    <option value = "2">2</option>
-                    <option value = "2.5">2.5</option>
-                    <option value = "3">3</option>
-                    <option value = "3.5">3.5</option>
-                    <option value = "4">4</option>
-                    <option value = "4.5">4.5</option>
-                    <option value = "5">5</option>
-
-
-                </select>
-            </div>
-            <div>
-                <label  htmlFor = "review-text">Write a review: </label>
-                <br></br>
-                <textarea id = "review-text" name = "review-text" value = {reviewText} onChange={e => setReviewText(e.target.value)}></textarea>
-            </div>
-
-            <div>
-                <label>Would you like to favorite this restaurant?</label>
-                <input type = "checkbox" value = {favorite} onChange={e => setFavorite(!favorite)}/>
-            </div>
-
-            <div>
-                <button id= "submit-review-button" type = "submit">Submit Review</button>
-            </div>
-
-   </form>
-</div>
-</>
-)
+        </>
+    );
 }
+
 
 export default AddReview

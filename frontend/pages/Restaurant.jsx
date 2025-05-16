@@ -23,9 +23,6 @@ function Restaurant () {
                 const reviews = await res.json()
                 setReviewList(reviews)
 
-
-
-
             }
 
             catch { console.error(Error)

@@ -135,7 +135,11 @@ def get_user_by_username(username: str):
     db=SessionLocal()
     db_user = db.query(DBUsers).filter(DBUsers.username==username).first()
     db.close()
-    return db_user
+    return UserOut(
+        user_id=db_user.user_id,
+        username=db_user.username,
+        email=db_user.email,
+        password=db_user.password)
 
 def add_user(user: UserIn) -> UserOut:
     db = SessionLocal()

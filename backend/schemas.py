@@ -29,7 +29,6 @@ class FavRestaurantOut(FavRestaurantIn):
     user_id: int
 
 
-
 class ReviewIn(BaseModel):
     user_id: int
     rating: float
@@ -40,6 +39,7 @@ class ReviewOut(ReviewIn):
     review_id: int
     restaurant_id: int
 
+
 class ReviewWithUser(BaseModel):
     review_id: int
     user_id: int
@@ -47,12 +47,14 @@ class ReviewWithUser(BaseModel):
     rating: float
     comment: str
 
+
 class UserReviewWithRestaurant(BaseModel):
     review_id: int
     restaurant_id: int
     restaurant_name: str
     rating: float
     comment: str
+
 
 class FavoriteWithRestaurant(BaseModel):
     favorite_id: int

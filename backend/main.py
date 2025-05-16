@@ -90,11 +90,11 @@ async def create_restaurant_review(restaurant_id: int, review: ReviewIn) -> Revi
 
 
 @app.get("/api/users")
-async def get_restaurant_users(username: Optional[str]) -> list[UserOut]:
-    if username:
-        user = get_user_by_username(username)
-        if user:
-            return [user]
+async def get_restaurant_users() -> list[UserOut]:
+    # if username:
+    #     user = get_user_by_username(username)
+    #     if user:
+    #         return [user]
     return get_users()
 
 
