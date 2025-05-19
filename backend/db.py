@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
 from db_models import DBRestaurants, DBFavoriteRestaurants, DBReviews, DBUsers
 from schemas import RestaurantIn, RestaurantOut, UserIn, UserOut, FavRestaurantIn, FavRestaurantOut, ReviewIn, ReviewOut, ReviewWithUser, UserReviewWithRestaurant, FavoriteWithRestaurant
@@ -131,15 +131,6 @@ def get_user(user_id: int) -> UserOut:
 
     )
 
-def get_user_by_username(username: str):
-    db=SessionLocal()
-    db_user = db.query(DBUsers).filter(DBUsers.username==username).first()
-    db.close()
-    return UserOut(
-        user_id=db_user.user_id,
-        username=db_user.username,
-        email=db_user.email,
-        password=db_user.password)
 
 def add_user(user: UserIn) -> UserOut:
     db = SessionLocal()
@@ -188,3 +179,10 @@ def add_favorite(user_id: int, favorite: FavRestaurantIn) -> FavRestaurantOut:
 
     )
     return favorite
+
+def get_avg_rating(restaurant_id: int):
+    db = SessionLocal()
+    avg_rating = db.query(func.avg(DBReviews.rating)).filter(DBReviews.restaurant_id == restaurant_id).scalar()
+    if avg_rating is not None:
+        return round(avg_rating, 1)
+    return None

@@ -9,6 +9,7 @@ function Restaurant () {
        const { id } = useParams();
        const[restaurantInfo, setRestaurantInfo] = useState([])
        const [reviewList, setReviewList] = useState([])
+       const [avgRating, setAvgRating] = useState(0)
 
     useEffect(()=> {
         async function fetchRestaurantInfo() {
@@ -22,6 +23,10 @@ function Restaurant () {
                 const res = await fetch (`http://localhost:8000/api/restaurants/${id}/reviews`)
                 const reviews = await res.json()
                 setReviewList(reviews)
+
+                const ratingResponse = await fetch (`http://localhost:8000/api/restaurants/${id}/avgrating`)
+                const rating = await ratingResponse.json()
+                setAvgRating(rating)
 
             }
 
@@ -42,8 +47,14 @@ return (
 <Link to="/">Go Home</Link>
 <div className = "restaurant-container"  >
     <div className = 'restaurant-details'>
-        <h1>{restaurantInfo.name}</h1>
+        <h1>{restaurantInfo.name} </h1>
+        <h3>{avgRating && (
+        <>
+            {avgRating} ⭐
+        </>
+  )}</h3>
         <h3>{restaurantInfo.address}</h3>
+
     </div>
     <h2  style={{ textDecoration: 'underline' }}>Reviews</h2>
     <div className = "review-list">
@@ -54,7 +65,7 @@ return (
 
 
                     <li key={review.review_id}>
-                        <p>Rating: {review.rating}/5 Stars</p>
+                        <p>{review.rating}⭐</p>
                         <p>{review.comment}</p>
                         <h6>Posted by <Link to={`/${review.user_id}/useraccount`}>{review.username}</Link></h6>
                     </li>

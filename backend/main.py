@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
 import requests
 from schemas import RestaurantIn, RestaurantOut, ReviewIn, ReviewOut, UserIn, UserOut, FavRestaurantOut, FavRestaurantIn, ReviewWithUser, FavoriteWithRestaurant, UserReviewWithRestaurant
-from db import add_restaurant, get_restaurants, get_restaurant, get_reviews, create_review, get_user, add_user, get_users, get_favorites, add_favorite, get_user_reviews, get_user_by_username
+from db import add_restaurant, get_restaurants, get_restaurant, get_reviews, create_review, get_user, add_user, get_users, get_favorites, add_favorite, get_user_reviews, get_avg_rating
 
 
 app = FastAPI()
@@ -88,13 +88,13 @@ async def get_restaurant_reviews(restaurant_id: int) -> list[ReviewWithUser] | N
 async def create_restaurant_review(restaurant_id: int, review: ReviewIn) -> ReviewOut:
     return create_review(restaurant_id, review)
 
+@app.get("/api/restaurants/{restaurant_id}/avgrating")
+async def get_avg_restaurant_rating(restaurant_id: int):
+    return get_avg_rating(restaurant_id)
+
 
 @app.get("/api/users")
 async def get_restaurant_users() -> list[UserOut]:
-    # if username:
-    #     user = get_user_by_username(username)
-    #     if user:
-    #         return [user]
     return get_users()
 
 

@@ -41,8 +41,8 @@ function UserAccount () {
 return (
 <>
 <Link to="/">Go Home</Link>
+<h2>{userName.username}'s Profile</h2>
 <div className = 'user-container'>
-  <h2>{userName.username}'s Profile</h2>
     <div className = 'user-review-list'>
         <h2>Reviews</h2>
 
@@ -52,9 +52,9 @@ return (
         {
         userReviews.map((review) => (
             <li key={review.review_id}>
-                            <h3>{review.restaurant_name}</h3>
+                            <h3><Link to ={`/${review.restaurant_id}`}>{review.restaurant_name}</Link></h3>
 
-                            <p>Rating: {review.rating}/5 Stars</p>
+                            <p>{review.rating}⭐</p>
                             <p>{review.comment}</p>
             </li>))
 
@@ -81,7 +81,7 @@ return (
                 {
                     userFavorites.map((favorite) => (
                     <li key={favorite.favorite_id}>
-                        <h3>{favorite.restaurant_name}</h3>
+                        <h3><Link to ={`/${favorite.restaurant_id}`}>{favorite.restaurant_name}</Link></h3>
 
                     </li>
                     ))
