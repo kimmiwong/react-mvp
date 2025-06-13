@@ -12,7 +12,6 @@ class DBUsers(Base):
     user_id = Column(Integer, primary_key=True, index=True)
     username = Column(String, nullable=False)
     email = Column(String, nullable=False)
-    password = Column(String, nullable=False)
 
 
 class DBRestaurants(Base):
@@ -21,6 +20,7 @@ class DBRestaurants(Base):
     restaurant_id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     address = Column(String, nullable=False)
+    average_rating = Column(Float, nullable=True)
 
 
 class DBFavoriteRestaurants(Base):

@@ -1,47 +1,59 @@
 import { Link } from 'react-router-dom';
-import {useState, useEffect, useContext} from 'react';
+import {useState, useEffect} from 'react';
 
 
 function Home () {
 
-    const [restaurantList, setRestaurantList] = useState([])
+    const [restaurantList, setRestaurantList] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const apiHost = import.meta.env.VITE_API_HOST;
+
 
 
     useEffect(() => {
         async function fetchRestaurantList() {
             try {
+                setIsLoading(true);
+                const response = await fetch(`${apiHost}/api/restaurants`);
+                if (!response.ok) throw new Error("Failed to fetch restaurants");
 
-                const response = await fetch ('http://localhost:8000/api/restaurants')
-                const restaurants = await response.json()
-                setRestaurantList(restaurants)
+                const restaurants = await response.json();
+                setRestaurantList(restaurants);
 
             }
 
-            catch {
+            catch(error) {
+                console.error("Error fetching restaurants:", error);
 
-
+            } finally {
+                setIsLoading(false);
             }
         }
         fetchRestaurantList()
-    }, [])
+    }, []);
 
-return (
-<div >
-    <div className = 'users-link-container'><Link to ='/users' className='users-link'>Users</Link> </div>
-    <h1>NYC Restaurant Finder</h1>
-    <div className = 'restaurant-list'>
-    {
-        restaurantList.map((restaurant) => {
-            return (
-                <div className = "restaurant-name" key={restaurant.restaurant_id}>
-                <p><Link to ={`/${restaurant.restaurant_id}`}>{restaurant.name}</Link></p>
-                </div>
-            )
-        })
+    if (isLoading) {
+        return <p>Loading...</p>;
     }
-    </div>
-</div>
-)
+
+    return (
+        <div >
+            <div className = 'users-link-container'><Link to ='/users' className='users-link'>Users</Link> </div>
+            <h1>NYC Restaurant Finder</h1>
+            <div className = 'restaurant-list'>
+            {
+                restaurantList.length === 0 ? <p>No restaurants found.</p>
+                : restaurantList.map((restaurant) => {
+                    return (
+                        <div className = "restaurant-name" key={restaurant.restaurant_id}>
+                        <p><Link to ={`/${restaurant.restaurant_id}`}>{restaurant.name}</Link></p>
+                        </div>
+                    )
+                })
+            }
+            </div>
+        </div>
+    )
 }
 
 export default Home

@@ -1,42 +1,41 @@
 import { Link } from 'react-router-dom';
-import {useState, useEffect, useContext} from 'react';
-import { useParams } from 'react-router-dom';
+import {useState, useEffect} from 'react';
 
 
 function Users () {
 
 
-     const [userList, setUserList] = useState([])
+    const [userList, setUserList] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const apiHost = import.meta.env.VITE_API_HOST;
 
-     useEffect(()=> {
+    useEffect(()=> {
 
         async function fetchUserList()  {
 
             try {
-                const response = await fetch ('http://localhost:8000/api/users')
-                const users = await response.json()
-                setUserList(users)
-                console.log(userList)
-
+                setIsLoading(true);
+                const response = await fetch (`${apiHost}/api/users`);
+                const users = await response.json();
+                setUserList(users);
             }
 
-            catch {console.error(Error)
-
-
+            catch (error) {
+                console.error("Error fetching users:", error);
+            } finally {
+                setIsLoading(false);
             }
-
-
-
-
         }
 
-        fetchUserList()
+        fetchUserList();
 
+     }, []);
 
-     }, [])
+    if (isLoading) {
+        return <p>Loading...</p>;
+    }
 
-
-     return (
+    return (
         <>
         <Link to="/">Go Home</Link>
         <div className = 'users-list'>
@@ -52,26 +51,16 @@ function Users () {
 
 
             </li>))
-
-
-
         }
 
         </ol>
         ) : (
             <p>No users exist.</p>
         )
-
         }
         </div>
-
         </>
-
-
-
      )
-
-
 }
 
 export default Users

@@ -4,7 +4,6 @@ from pydantic import BaseModel
 class UserIn(BaseModel):
     username: str
     email: str
-    password: str
 
 
 class UserOut(UserIn):
@@ -18,6 +17,7 @@ class RestaurantIn(BaseModel):
 
 class RestaurantOut(RestaurantIn):
     restaurant_id: int | None
+    average_rating: float | None = None
 
 
 class FavRestaurantIn(BaseModel):
@@ -38,6 +38,12 @@ class ReviewIn(BaseModel):
 class ReviewOut(ReviewIn):
     review_id: int
     restaurant_id: int
+
+
+class ReviewUpdate(BaseModel):
+    user_id: int | None = None
+    rating: float | None = None
+    comment: str | None = None
 
 
 class ReviewWithUser(BaseModel):

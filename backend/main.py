@@ -1,27 +1,16 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from typing import Optional
-import requests
-from schemas import RestaurantIn, RestaurantOut, ReviewIn, ReviewOut, UserIn, UserOut, FavRestaurantOut, FavRestaurantIn, ReviewWithUser, FavoriteWithRestaurant, UserReviewWithRestaurant
-from db import add_restaurant, get_restaurants, get_restaurant, get_reviews, create_review, get_user, add_user, get_users, get_favorites, add_favorite, get_user_reviews, get_avg_rating
+from contextlib import asynccontextmanager
+from seed import seed_restaurant_data
+from schemas import RestaurantIn, RestaurantOut, ReviewIn, ReviewOut, ReviewUpdate, UserIn, UserOut, FavRestaurantOut, FavRestaurantIn, ReviewWithUser, FavoriteWithRestaurant, UserReviewWithRestaurant
+from db import add_restaurant, get_restaurants, get_restaurant, get_reviews, get_review, create_review, get_user, add_user, get_users, get_favorites, add_favorite, get_user_reviews, delete_review, update_review
 
-
-app = FastAPI()
 
 origins = [
-    "http://localhost:8000",
-    "http://localhost:8000/api/restaurants",
-    "http://localhost:5173",
-    "http://localhost:8000/api/restaurants/{restaurant_id}",
-    "http://localhost:5173/{restaurant_id}/addreview",
-    "http://localhost:5173/{user_id}/useraccount",
-    "http://localhost:5173/{restaurant_id}"
-    "http://localhost:8000/api/users",
-    "http://localhost:8000/api/restaurants/{restaurant_id}/reviews",
-    "http://localhost:8000/api/users/{user_id}",
-    "http://localhost:8000/api/users/{user_id}/reviews",
-    "http://localhost:8000/api/users/{user_id}/favorites"
+    "http://localhost:5173"
 ]
+
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
@@ -31,39 +20,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# @app.get("/api/restaurants/")
-# async def get_restaurants():
-#     url ="https://api.foursquare.com/v3/places/search?categories=13000&near=Brooklyn%2C%20NY&limit=50"
+@app.post("/api/restaurants")
+async def create_restaurant(restaurant: RestaurantIn):
+    restaurant = add_restaurant(restaurant)
+    return restaurant
 
-#     headers = {
-#     "accept": "application/json",
-#     "Authorization": "fsq3UbovOEIxmJ9RRnfHCFQkShWXrl3K242e+wZsNEynLXs="
-# }
-
-#     response = requests.get(url, headers=headers)
-
-#     data = response.json()
-#     restaurant_data = data.get('results')
-#     results = []
-
-#     for restaurant in restaurant_data:
-#         new_dict = {
-#             "name": restaurant.get("name"),
-#             "address": restaurant.get("location").get("address")
-#         }
-#         results.append(new_dict)
-
-#     for restaurant in results:
-#         restaurant = await create_restaurant(restaurant)
-
-
-
-
-
-# @app.post("/api/restaurants")
-# async def create_restaurant(restaurant: RestaurantIn):
-#     restaurant = add_restaurant(restaurant)
-#     return restaurant
 
 @app.get("/api/restaurants")
 async def list_restaurants():
@@ -88,15 +49,35 @@ async def get_restaurant_reviews(restaurant_id: int) -> list[ReviewWithUser] | N
 async def create_restaurant_review(restaurant_id: int, review: ReviewIn) -> ReviewOut:
     return create_review(restaurant_id, review)
 
-@app.get("/api/restaurants/{restaurant_id}/avgrating")
-async def get_avg_restaurant_rating(restaurant_id: int):
-    return get_avg_rating(restaurant_id)
+
+
+@app.get("/api/restaurants/{restaurant_id}/reviews/{review_id}", response_model=ReviewOut)
+async def get_restaurant_review(restaurant_id: int, review_id: int):
+    review = get_review(review_id)
+    if not review or review.restaurant_id != restaurant_id:
+        raise HTTPException(status_code=404, detail="Review not found")
+    return review
+
+
+@app.put("/api/restaurants/{restaurant_id}/reviews/{review_id}")
+async def update_restaurant_review(review_id: int, review: ReviewUpdate) -> ReviewOut:
+    updated_review = update_review(review_id, review)
+    if not updated_review:
+        raise HTTPException(status_code=404, detail="Review not found")
+    return updated_review
+
+
+@app.delete("/api/restaurants/{restaurant_id}/reviews/{review_id}")
+async def delete_restaurant_review(review_id: int):
+    deleted_review = delete_review(review_id)
+    if not deleted_review:
+        raise HTTPException(status_code=404, detail="Review not found")
+    return True
 
 
 @app.get("/api/users")
 async def get_restaurant_users() -> list[UserOut]:
     return get_users()
-
 
 
 @app.get("/api/users/{user_id}")
@@ -105,7 +86,6 @@ async def get_restaurant_user(user_id: int) -> UserOut:
     if not user:
         raise HTTPException(status_code=404, detail='User not found')
     return user
-
 
 
 @app.post("/api/users")

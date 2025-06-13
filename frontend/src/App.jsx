@@ -6,6 +6,8 @@ import Restaurant from '../pages/Restaurant'
 import UserAccount from '../pages/UserAccount'
 import AddReview from '../pages/AddReview'
 import Users from '../pages/Users'
+import EditReview from '../pages/EditReview'
+
 
 const App = () => {
   return (
@@ -16,6 +18,7 @@ const App = () => {
       <Route path="/:id" element={<Restaurant/>} />
       <Route path="/:id/addreview" element={<AddReview />} />
       <Route path="/:userId/useraccount" element={<UserAccount />}/>
+      <Route path ="/:id/:reviewId/editreview" element={<EditReview />}/>
 
     </Routes>
 
