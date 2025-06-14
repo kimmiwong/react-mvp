@@ -7,7 +7,8 @@ from db import add_restaurant, get_restaurants, get_restaurant, get_reviews, get
 
 
 origins = [
-    "http://localhost:5173"
+    "http://localhost:5173",
+    "https://restaurant-finder-frontend.onrender.com/"
 ]
 
 app = FastAPI()
